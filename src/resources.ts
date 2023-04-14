@@ -1,8 +1,12 @@
 import { ImageSource } from "excalibur";
-import sword from "./images/sword.png"; // for parcelv2 this is configured in the .parcelrc
+import connect from "./images/connect.png";
+import farm from "./images/farm.png";
+import ethfarm from "./images/ethfarm.png";
 
 let Resources = {
-  Sword: new ImageSource(sword)
-};
+  ConnectButton: new ImageSource(connect),
+  Farm: new ImageSource(farm),
+  Title: new ImageSource(ethfarm)
+}
 
 export { Resources };

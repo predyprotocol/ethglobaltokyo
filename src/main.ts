@@ -1,26 +1,35 @@
 import { Actor, Color, DisplayMode, Engine, Loader } from "excalibur"
 import { SampleActor } from "./SampleActor"
 import { ethers } from "ethers"
+import { ConnectButton } from "./ConnectButton";
+import { Resources } from "./resources";
+import { Farm } from "./Farm";
 
 class Game extends Engine {
   constructor() {
-    super({ width: 400, height: 400, backgroundColor: new Color(10, 120, 26) });
+    super({ width: 400, height: 480, backgroundColor: new Color(156, 252, 240) });
+    // 9CFCF0
   }
 
   async initialize() {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
 
-    const blockNumber = await provider.getBlockNumber()
-
     const signer = provider.getSigner()
 
-    console.log(blockNumber)
+    try {
+      const address = await signer.getAddress()
 
-    await provider.send("eth_requestAccounts", []);
+      console.log(address)
 
-    this.add(new SampleActor(blockNumber, await signer.getAddress()));
+      this.add(new Farm());
+    } catch (e) {
+      this.add(new ConnectButton());
+    }
+    //this.add(new SampleActor(blockNumber, await signer.getAddress()));
 
-    this.start()
+    const loader = new Loader([Resources.ConnectButton, Resources.Title, Resources.Farm])
+
+    this.start(loader)
   }
 }
 
