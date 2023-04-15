@@ -32,7 +32,7 @@ const vaultEntities = `
 query vaultEntities {
         vaultEntities(
           first: 1000
-          where: { isMainVault: false, isClosed: false }
+          where: { isMainVault: false, isClosed: false, margin: 100000000 }
           orderBy: margin
           orderDirection: desc
         ) {
@@ -65,4 +65,4 @@ query vaultEntities {
           }
         }
       }
-    `
+    `;
