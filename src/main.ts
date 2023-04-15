@@ -1,6 +1,4 @@
-import { Actor, Color, DisplayMode, Engine, Loader, Scene, Timer } from "excalibur"
-import { SampleActor } from "./SampleActor"
-import { ethers } from "ethers"
+import { Color, Engine, Loader, Scene, Timer } from "excalibur"
 import { ConnectButton } from "./ConnectButton";
 import { Resources } from "./resources";
 import { Farm } from "./Farm";
@@ -9,10 +7,16 @@ import { FarmButton } from "./FarmButton";
 import { HarvestButton } from "./HarvestButton";
 import { Controller } from "./contracts/controller";
 import { BASE_MARGIN_AMOUNT } from "./constants";
+import { RankingButton } from "./RankingButton";
+import { Ranking } from "./Ranking";
+import { ReturnButton } from "./ReturnButton";
 
 class Game extends Engine {
   crops: Crop[] = []
   controller: Controller
+  ranking1: Ranking
+  ranking2: Ranking
+  ranking3: Ranking
 
   constructor() {
     super({
@@ -27,10 +31,25 @@ class Game extends Engine {
     const titleScene = new Scene()
     const emptyScene = new Scene()
     const farmScene = new Scene()
+    const rankingScene = new Scene()
 
     titleScene.add(new ConnectButton())
     emptyScene.add(new FarmButton(this.controller))
     farmScene.add(new Farm())
+    farmScene.add(new RankingButton(() => {
+      game.goToScene('ranking')
+    }))
+    rankingScene.add(new ReturnButton(() => {
+      game.goToScene('farm')
+    }))
+
+    this.ranking1 = new Ranking(1)
+    this.ranking2 = new Ranking(2)
+    this.ranking3 = new Ranking(3)
+
+    rankingScene.add(this.ranking1)
+    rankingScene.add(this.ranking2)
+    rankingScene.add(this.ranking3)
 
     const cropPositions = [{
       x: 100,
@@ -70,10 +89,7 @@ class Game extends Engine {
     game.add('title', titleScene)
     game.add('empty', emptyScene)
     game.add('farm', farmScene)
-
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-
-    const signer = provider.getSigner()
+    game.add('ranking', rankingScene)
 
     const loader = new Loader([Resources.ConnectButton, Resources.FarmingButton, Resources.HarvestButton, Resources.Title, Resources.Farm, Resources.Crop1, Resources.Crop2])
 
@@ -175,8 +191,13 @@ class Game extends Engine {
             }
           }
         }
-
     }
+
+    await this.updateRanking()
+  }
+
+  async updateRanking() {
+    this.ranking1.updateRanking('0x0000')
   }
 }
 
