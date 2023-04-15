@@ -80,17 +80,20 @@ export class Controller {
   }
 
   async getVaultStatus(vaultId: number): Promise<any> {
-    return this.contract.getVaultStatus(vaultId);
+    const contract = this.contract.connect(this.signer)
+    const from = await this.signer.getAddress()
+
+    return contract.callStatic.getVaultStatus(vaultId, { from });
   }
 
   async getSqrtIndexPrice(assetId: number): Promise<any> {
-    return this.contract.getSqrtPrice(assetId);
+    return this.contract.callStatic.getSqrtPrice(assetId);
   }
 
   async getVaultStatusWithAddress() {
     const contract = this.contract.connect(this.signer)
     const from = await this.signer.getAddress()
-    console.log(from)
+
     return contract.callStatic.getVaultStatusWithAddress({ from });
   }
 }

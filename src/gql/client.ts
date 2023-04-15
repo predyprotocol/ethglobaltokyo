@@ -23,7 +23,7 @@ export class GQLClient {
     });
   }
 
-  async vaultEntities() { 
+  async vaultEntities() {
     return await this.query(vaultEntities)
   }
 }
@@ -32,7 +32,7 @@ const vaultEntities = `
 query vaultEntities {
         vaultEntities(
           first: 1000
-          where: { isMainVault: false, isClosed: false, margin: 100000000 }
+          where: { isMainVault: false, isClosed: false, margin: "100000000" }
           orderBy: margin
           orderDirection: desc
         ) {

@@ -874,6 +874,11 @@
       {
         "components": [
           {
+            "internalType": "uint256",
+            "name": "vaultId",
+            "type": "uint256"
+          },
+          {
             "internalType": "bool",
             "name": "isMainVault",
             "type": "bool"
@@ -906,19 +911,124 @@
                 "type": "uint256"
               },
               {
-                "internalType": "int256",
-                "name": "stableAmount",
-                "type": "int256"
-              },
-              {
-                "internalType": "int256",
-                "name": "underlyingamount",
-                "type": "int256"
-              },
-              {
-                "internalType": "int256",
-                "name": "sqrtAmount",
-                "type": "int256"
+                "components": [
+                  {
+                    "components": [
+                      {
+                        "internalType": "int256",
+                        "name": "amount",
+                        "type": "int256"
+                      },
+                      {
+                        "internalType": "int256",
+                        "name": "entryValue",
+                        "type": "int256"
+                      }
+                    ],
+                    "internalType": "struct Perp.PositionStatus",
+                    "name": "perp",
+                    "type": "tuple"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "int256",
+                        "name": "amount",
+                        "type": "int256"
+                      },
+                      {
+                        "internalType": "int256",
+                        "name": "entryValue",
+                        "type": "int256"
+                      },
+                      {
+                        "internalType": "int256",
+                        "name": "stableRebalanceEntryValue",
+                        "type": "int256"
+                      },
+                      {
+                        "internalType": "int256",
+                        "name": "underlyingRebalanceEntryValue",
+                        "type": "int256"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "entryTradeFee0",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "entryTradeFee1",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "entryPremium",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct Perp.SqrtPositionStatus",
+                    "name": "sqrtPerp",
+                    "type": "tuple"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "int256",
+                        "name": "positionAmount",
+                        "type": "int256"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "lastFeeGrowth",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct ScaledAsset.UserStatus",
+                    "name": "underlying",
+                    "type": "tuple"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "int256",
+                        "name": "positionAmount",
+                        "type": "int256"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "lastFeeGrowth",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct ScaledAsset.UserStatus",
+                    "name": "stable",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "int24",
+                    "name": "rebalanceLastTickLower",
+                    "type": "int24"
+                  },
+                  {
+                    "internalType": "int24",
+                    "name": "rebalanceLastTickUpper",
+                    "type": "int24"
+                  },
+                  {
+                    "internalType": "int256",
+                    "name": "rebalanceEntryFeeUnderlying",
+                    "type": "int256"
+                  },
+                  {
+                    "internalType": "int256",
+                    "name": "rebalanceEntryFeeStable",
+                    "type": "int256"
+                  }
+                ],
+                "internalType": "struct Perp.UserStatus",
+                "name": "position",
+                "type": "tuple"
               },
               {
                 "internalType": "int256",

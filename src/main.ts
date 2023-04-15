@@ -15,9 +15,7 @@ import { GQLClient } from "./gql/client";
 class Game extends Engine {
   crops: Crop[] = []
   controller: Controller
-  ranking1: Ranking
-  ranking2: Ranking
-  ranking3: Ranking
+  rankings: Ranking[] = []
 
   constructor() {
     super({
@@ -44,13 +42,13 @@ class Game extends Engine {
       game.goToScene('farm')
     }))
 
-    this.ranking1 = new Ranking(1)
-    this.ranking2 = new Ranking(2)
-    this.ranking3 = new Ranking(3)
+    this.rankings.push(new Ranking(1))
+    this.rankings.push(new Ranking(2))
+    this.rankings.push(new Ranking(3))
 
-    rankingScene.add(this.ranking1)
-    rankingScene.add(this.ranking2)
-    rankingScene.add(this.ranking3)
+    rankingScene.add(this.rankings[0])
+    rankingScene.add(this.rankings[1])
+    rankingScene.add(this.rankings[2])
 
     const cropPositions = [{
       x: 100,
@@ -93,11 +91,6 @@ class Game extends Engine {
     game.add('ranking', rankingScene)
 
     const loader = new Loader([Resources.ConnectButton, Resources.FarmingButton, Resources.HarvestButton, Resources.Title, Resources.Farm, Resources.Crop1, Resources.Crop2])
-
-    // const client = new GQLClient();
-    // const retrieves = await client.vaultEntities();
-    // console.dir(retrieves);
-    // console.dir("hoge");
 
     await this.start(loader)
 
@@ -160,6 +153,8 @@ class Game extends Engine {
       console.log(e)
       game.goToScene('title')
     }
+
+    await this.updateRanking()
   }
 
   async updateFarm() {
@@ -197,12 +192,46 @@ class Game extends Engine {
           }
         }
     }
-
-    await this.updateRanking()
   }
 
   async updateRanking() {
-    this.ranking1.updateRanking('0x0000')
+    const client = new GQLClient();
+    const retrieves = await client.vaultEntities();
+    const vaults = retrieves.data.vaultEntities
+
+    console.dir(retrieves.data.vaultEntities);
+    console.dir("hoge");
+
+    const result = await Promise.all(vaults.map(async vault => {
+
+      const vaultStatus = await this.controller.getVaultStatus(vault.vaultId)
+
+      return {
+        owner: vault.owner,
+        premium: vaultStatus[6][0][3]
+      }
+    }))
+
+    console.log(result)
+
+    result.sort((a: any, b: any) => {
+      if (a.premium.gt(b.premium)) {
+        return -1
+      } else {
+        return 1
+      }
+    })
+
+
+
+    for (let i = 0; i < 3; i++) {
+      const vault = result[i]
+      if (vault) {
+        this.rankings[i].updateRanking(vault.owner, vault.premium)
+
+      }
+    }
+
   }
 }
 
