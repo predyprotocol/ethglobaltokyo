@@ -1,6 +1,8 @@
 import { Bytes, ethers } from "ethers";
 import * as ControllerAbi from "../../abis/Controller.json";
 import { Controller as controllerAddress } from "../../config/arbitrum.json";
+// This function detects most providers injected at window.ethereum.
+import detectEthereumProvider from '@metamask/detect-provider';
 
 type TradeParams = {
   tradeAmount: number
@@ -19,22 +21,41 @@ type CloseParams = {
 }
 
 class Controller {
-  private controller: ethers.Contract;
+  private contract: ethers.Contract;
   private signer: ethers.Signer;
 
   constructor() {
-    if (typeof window.ethereum !== "undefined") {
-      console.log("MetaMask is installed!");
-      throw new Error("MetaMask is not installed");
-    }
+  }
 
+  public static async initialize(): Promise<Controller> {
+    const controller = new Controller();
+
+    // This returns the provider, or null if it wasn't detected.
+    const checkProvider = await detectEthereumProvider();
+    if (checkProvider) {
+      // From now on, this should always be true:
+      // provider === window.ethereum
+      this.startApp(checkProvider); // initialize your app
+    } else {
+      console.log("Please install MetaMask!");
+    }
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    this.signer = provider.getSigner();
-    this.controller = new ethers.Contract(
+    controller.signer = provider.getSigner();
+    controller.contract = new ethers.Contract(
       controllerAddress,
       ControllerAbi,
       provider
     );
+    return controller;
+  }
+
+  public static startApp(provider) {
+    // If the provider returned by detectEthereumProvider isn't the same as
+    // window.ethereum, something is overwriting it – perhaps another wallet.
+    if (provider !== window.ethereum) {
+      console.error('Do you have multiple wallets installed?');
+    }
+    // Access the decentralized web!
   }
 
   openIsolatedVault(
@@ -42,8 +63,8 @@ class Controller {
     assetId: number,
     tradeParams: TradeParams
   ) {
-    const controller = this.controller.connect(this.signer);
-    controller.openIsolatedVault(depositAmount, assetId, tradeParams);
+    const contract = this.contract.connect(this.signer);
+    contract.openIsolatedVault(depositAmount, assetId, tradeParams);
   }
 
   closeIsolatedVault(
@@ -51,16 +72,16 @@ class Controller {
     assetId: number,
     closeParams: CloseParams
   ) {
-    const controller = this.controller.connect(this.signer);
-    controller.closeIsolatedVault(isolatedVaultId, assetId, closeParams);
+    const contract = this.contract.connect(this.signer);
+    contract.closeIsolatedVault(isolatedVaultId, assetId, closeParams);
   }
 
   async getVaultStatus(vaultId: number): Promise<any> {
-    return this.controller.getVaultStatus(vaultId);
+    return this.contract.getVaultStatus(vaultId);
   }
 
-  async getVaultStatusWithAddress() { 
-    const controller = this.controller.connect(this.signer);
-    return this.controller.getVaultStatusWithAddress();
+  async getVaultStatusWithAddress() {
+    const contract = this.contract.connect(this.signer);
+    return contract.getVaultStatusWithAddress();
   }
 }
