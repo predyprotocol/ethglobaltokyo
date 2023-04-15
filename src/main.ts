@@ -34,7 +34,9 @@ class Game extends Engine {
     const rankingScene = new Scene()
 
     titleScene.add(new Title())
-    titleScene.add(new ConnectButton())
+    titleScene.add(new ConnectButton(async () => {
+      await this.loadWallet()
+    }))
     emptyScene.add(new FarmButton(this.controller))
     farmScene.add(new Farm())
     farmScene.add(new RankingButton(() => {
@@ -96,46 +98,13 @@ class Game extends Engine {
 
     await this.start(loader)
 
-    // 
+    await this.loadWallet()
+  }
 
+  async loadWallet() {
     try {
-      const vaultStatus = await this.controller.getVaultStatusWithAddress()
+      await this.updateFarm()
 
-      if (vaultStatus[1].length === 0) {
-        game.goToScene('empty')
-      } else {
-        const vaultId = vaultStatus[1][0][0]
-
-        farmScene.add(new HarvestButton(this.controller, vaultId))
-
-        const value = vaultStatus[1][0][2]
-        const premium = vaultStatus[1][0][6][0][3]
-
-        game.goToScene('farm')
-
-        if (premium.gt(0)) {
-          const profit = premium.sub(0)
-          console.log(profit.toString())
-          const index = profit.div('10000').toNumber()
-
-          for (let i = 0; i < 9; i++) {
-            if (i < index) {
-              this.crops[i].updateState(1)
-            }
-          }
-        } else
-          if (value.lt(BASE_MARGIN_AMOUNT)) {
-            const loss = value.sub(BASE_MARGIN_AMOUNT).mul(-1)
-            const index = loss.div('500000').toNumber()
-
-            for (let i = 0; i < 9; i++) {
-              if (i < index) {
-                this.crops[i].updateState(-1)
-              }
-            }
-          }
-
-      }
 
       const timer = new Timer({
         fcn: () => {
@@ -170,10 +139,10 @@ class Game extends Engine {
 
       game.goToScene('farm')
 
-      if (premium.gt(0)) {
-        const profit = premium.sub(0)
-        console.log(profit.toString())
+      if (value.gt(BASE_MARGIN_AMOUNT)) {
+        const profit = value.sub(BASE_MARGIN_AMOUNT)
         const index = profit.div('10000').toNumber()
+        console.log(profit.toString(), index)
 
         for (let i = 0; i < 9; i++) {
           if (i < index) {
@@ -183,7 +152,7 @@ class Game extends Engine {
       } else
         if (value.lt(BASE_MARGIN_AMOUNT)) {
           const loss = value.sub(BASE_MARGIN_AMOUNT).mul(-1)
-          const index = loss.div('500000').toNumber()
+          const index = loss.div('10000').toNumber()
 
           for (let i = 0; i < 9; i++) {
             if (i < index) {
@@ -205,9 +174,11 @@ class Game extends Engine {
     const result = await Promise.all(vaults.map(async vault => {
 
       const vaultStatus = await this.controller.getVaultStatus(vault.vaultId)
+      const value = vaultStatus[2]
 
       return {
         owner: vault.owner,
+        pnl: value.sub(BASE_MARGIN_AMOUNT),
         premium: vaultStatus[6][0][3]
       }
     }))
@@ -215,7 +186,7 @@ class Game extends Engine {
     console.log(result)
 
     result.sort((a: any, b: any) => {
-      if (a.premium.gt(b.premium)) {
+      if (a.pnl.gt(b.pnl)) {
         return -1
       } else {
         return 1
@@ -227,7 +198,7 @@ class Game extends Engine {
     for (let i = 0; i < 3; i++) {
       const vault = result[i]
       if (vault) {
-        this.rankings[i].updateRanking(vault.owner, vault.premium)
+        this.rankings[i].updateRanking(vault.owner, vault.pnl)
 
       }
     }
