@@ -9,7 +9,7 @@ export class HarvestButton extends Actor {
 
   vaultId: number
 
-  constructor(controller: Controller, vaultId, number) {
+  constructor(controller: Controller, vaultId: number) {
     super({
       pos: new Vector(200, 420),
       width: 300,

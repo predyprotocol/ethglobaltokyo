@@ -17,6 +17,7 @@ class Game extends Engine {
   crops: Crop[] = []
   controller: Controller
   rankings: Ranking[] = []
+  farmScene: Scene
 
   constructor() {
     super({
@@ -30,7 +31,7 @@ class Game extends Engine {
 
     const titleScene = new Scene()
     const emptyScene = new Scene()
-    const farmScene = new Scene()
+    this.farmScene = new Scene()
     const rankingScene = new Scene()
 
     titleScene.add(new Title())
@@ -38,8 +39,8 @@ class Game extends Engine {
       await this.loadWallet()
     }))
     emptyScene.add(new FarmButton(this.controller))
-    farmScene.add(new Farm())
-    farmScene.add(new RankingButton(() => {
+    this.farmScene.add(new Farm())
+    this.farmScene.add(new RankingButton(() => {
       game.goToScene('ranking')
     }))
     rankingScene.add(new ReturnButton(() => {
@@ -86,12 +87,12 @@ class Game extends Engine {
     for (let i = 0; i < 9; i++) {
       const crop = new Crop(cropPositions[i].x, cropPositions[i].y)
       this.crops.push(crop)
-      farmScene.add(crop)
+      this.farmScene.add(crop)
     }
 
     game.add('title', titleScene)
     game.add('empty', emptyScene)
-    game.add('farm', farmScene)
+    game.add('farm', this.farmScene)
     game.add('ranking', rankingScene)
 
     const loader = new Loader([Resources.ConnectButton, Resources.FarmingButton, Resources.HarvestButton, Resources.Title, Resources.Farm, Resources.Crop1, Resources.Crop2])
@@ -134,6 +135,10 @@ class Game extends Engine {
     if (vaultStatus[1].length === 0) {
       game.goToScene('empty')
     } else {
+      const vaultId = vaultStatus[1][0][0]
+
+      this.farmScene.add(new HarvestButton(this.controller, vaultId))
+
       const value = vaultStatus[1][0][2]
       const premium = vaultStatus[1][0][6][0][3]
 
