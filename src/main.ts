@@ -94,12 +94,14 @@ class Game extends Engine {
         farmScene.add(new HarvestButton(controller, vaultId))
 
         const value = vaultStatus[1][0][2]
+        const premium = vaultStatus[1][0][6][0][3]
 
         game.goToScene('farm')
 
-        if (value.gt(BASE_MARGIN_AMOUNT)) {
-          const profit = value.sub(BASE_MARGIN_AMOUNT)
-          const index = profit.div('500000').toNumber()
+        if (premium.gt(0)) {
+          const profit = premium.sub(0)
+          console.log(profit.toString())
+          const index = profit.div('10000').toNumber()
 
           for (let i = 0; i < 9; i++) {
             if (i < index) {

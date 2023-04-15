@@ -1479,11 +1479,6 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_vaultId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "_depositAmount",
         "type": "uint256"
       },

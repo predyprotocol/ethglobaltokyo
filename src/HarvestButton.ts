@@ -28,7 +28,6 @@ export class HarvestButton extends Actor {
     this.graphics.add(Resources.HarvestButton.toSprite())
 
     this.on('pointerup', async () => {
-      // create isolated vault
       const sqrtPrice = await this.controller.getSqrtIndexPrice(2)
 
       this.controller.closeIsolatedVault(

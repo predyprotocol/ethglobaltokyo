@@ -1,17 +1,17 @@
-import { BigNumber, Bytes, ethers } from "ethers";
+import { BigNumber, BigNumberish, Bytes, ethers } from "ethers";
 import * as ControllerAbi from "../../abis/Controller.json";
 import { Controller as controllerAddress } from "../../config/arbitrum.json";
 // This function detects most providers injected at window.ethereum.
 import detectEthereumProvider from '@metamask/detect-provider';
 
 type TradeParams = {
-  tradeAmount: number
-  tradeAmountSqrt: number
-  lowerSqrtPrice: number
-  upperSqrtPrice: number
+  tradeAmount: BigNumberish
+  tradeAmountSqrt: BigNumberish
+  lowerSqrtPrice: BigNumber
+  upperSqrtPrice: BigNumber
   deadline: number
   enableCallback: boolean
-  data: Bytes
+  data: string
 }
 
 type CloseParams = {
@@ -59,7 +59,7 @@ export class Controller {
   }
 
   openIsolatedVault(
-    depositAmount: number,
+    depositAmount: BigNumber,
     assetId: number,
     tradeParams: TradeParams
   ) {
