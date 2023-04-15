@@ -1,4 +1,4 @@
-import { Actor, Color, DisplayMode, Engine, Loader, Scene } from "excalibur"
+import { Actor, Color, DisplayMode, Engine, Loader, Scene, Timer } from "excalibur"
 import { SampleActor } from "./SampleActor"
 import { ethers } from "ethers"
 import { ConnectButton } from "./ConnectButton";
@@ -12,6 +12,7 @@ import { BASE_MARGIN_AMOUNT } from "./constants";
 
 class Game extends Engine {
   crops: Crop[] = []
+  controller: Controller
 
   constructor() {
     super({
@@ -21,14 +22,14 @@ class Game extends Engine {
   }
 
   async initialize() {
-    const controller = await Controller.initialize()
+    this.controller = await Controller.initialize()
 
     const titleScene = new Scene()
     const emptyScene = new Scene()
     const farmScene = new Scene()
 
     titleScene.add(new ConnectButton())
-    emptyScene.add(new FarmButton(controller))
+    emptyScene.add(new FarmButton(this.controller))
     farmScene.add(new Farm())
 
     const cropPositions = [{
@@ -81,7 +82,7 @@ class Game extends Engine {
 
     // 
 
-    const vaultStatus = await controller.getVaultStatusWithAddress()
+    const vaultStatus = await this.controller.getVaultStatusWithAddress()
 
     console.log(vaultStatus[1])
 
@@ -91,7 +92,7 @@ class Game extends Engine {
       } else {
         const vaultId = vaultStatus[1][0][0]
 
-        farmScene.add(new HarvestButton(controller, vaultId))
+        farmScene.add(new HarvestButton(this.controller, vaultId))
 
         const value = vaultStatus[1][0][2]
         const premium = vaultStatus[1][0][6][0][3]
@@ -121,12 +122,61 @@ class Game extends Engine {
           }
 
       }
+
+      const timer = new Timer({
+        fcn: () => {
+          console.log(1)
+          this.updateFarm()
+        },
+        repeats: true,
+        interval: 15000,
+      })
+
+      game.currentScene.add(timer)
+
+      timer.start()
     } catch (e) {
       console.log(e)
       game.goToScene('title')
     }
+  }
 
-    // this.crops[0].updateState(1)
+  async updateFarm() {
+    const vaultStatus = await this.controller.getVaultStatusWithAddress()
+
+    console.log(vaultStatus[1])
+
+    if (vaultStatus[1].length === 0) {
+      game.goToScene('empty')
+    } else {
+      const value = vaultStatus[1][0][2]
+      const premium = vaultStatus[1][0][6][0][3]
+
+      game.goToScene('farm')
+
+      if (premium.gt(0)) {
+        const profit = premium.sub(0)
+        console.log(profit.toString())
+        const index = profit.div('10000').toNumber()
+
+        for (let i = 0; i < 9; i++) {
+          if (i < index) {
+            this.crops[i].updateState(1)
+          }
+        }
+      } else
+        if (value.lt(BASE_MARGIN_AMOUNT)) {
+          const loss = value.sub(BASE_MARGIN_AMOUNT).mul(-1)
+          const index = loss.div('500000').toNumber()
+
+          for (let i = 0; i < 9; i++) {
+            if (i < index) {
+              this.crops[i].updateState(-1)
+            }
+          }
+        }
+
+    }
   }
 }
 
