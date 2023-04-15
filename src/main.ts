@@ -11,6 +11,7 @@ import { RankingButton } from "./RankingButton";
 import { Ranking } from "./Ranking";
 import { ReturnButton } from "./ReturnButton";
 import { GQLClient } from "./gql/client";
+import { Title } from "./Title";
 
 class Game extends Engine {
   crops: Crop[] = []
@@ -32,6 +33,7 @@ class Game extends Engine {
     const farmScene = new Scene()
     const rankingScene = new Scene()
 
+    titleScene.add(new Title())
     titleScene.add(new ConnectButton())
     emptyScene.add(new FarmButton(this.controller))
     farmScene.add(new Farm())
