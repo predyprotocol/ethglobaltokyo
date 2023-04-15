@@ -58,13 +58,13 @@ export class Controller {
     // Access the decentralized web!
   }
 
-  openIsolatedVault(
+  async openIsolatedVault(
     depositAmount: BigNumber,
     assetId: number,
     tradeParams: TradeParams
   ) {
     const contract = this.contract.connect(this.signer);
-    contract.openIsolatedVault(depositAmount, assetId, tradeParams);
+    await contract.openIsolatedVault(depositAmount, assetId, tradeParams);
   }
 
   closeIsolatedVault(

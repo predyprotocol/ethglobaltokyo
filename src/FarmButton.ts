@@ -27,7 +27,7 @@ export class FarmButton extends Actor {
       // this.controller.openIsolatedVault('100000000', 2, {})
       const sqrtPrice = await this.controller.getSqrtIndexPrice(2)
 
-      this.controller.openIsolatedVault(
+      await this.controller.openIsolatedVault(
         BASE_MARGIN_AMOUNT,
         2,
         {

@@ -38,7 +38,10 @@ class Game extends Engine {
     titleScene.add(new ConnectButton(async () => {
       await this.loadWallet()
     }))
+
+    emptyScene.add(new Farm())
     emptyScene.add(new FarmButton(this.controller))
+
     this.farmScene.add(new Farm())
     this.farmScene.add(new RankingButton(() => {
       game.goToScene('ranking')
@@ -96,6 +99,9 @@ class Game extends Engine {
     game.add('ranking', rankingScene)
 
     const loader = new Loader([Resources.ConnectButton, Resources.FarmingButton, Resources.HarvestButton, Resources.Title, Resources.Farm, Resources.Crop1, Resources.Crop2])
+
+    loader.suppressPlayButton = true
+    loader.hidePlayButton()
 
     await this.start(loader)
 
