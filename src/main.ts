@@ -96,11 +96,9 @@ class Game extends Engine {
 
     // 
 
-    const vaultStatus = await this.controller.getVaultStatusWithAddress()
-
-    console.log(vaultStatus[1])
-
     try {
+      const vaultStatus = await this.controller.getVaultStatusWithAddress()
+
       if (vaultStatus[1].length === 0) {
         game.goToScene('empty')
       } else {
