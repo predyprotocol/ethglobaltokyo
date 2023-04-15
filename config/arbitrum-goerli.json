@@ -1,0 +1,8 @@
+{
+  "network": "arbitrum-goerli",
+  "Controller": "0x269558B44ceb53fbda9C7401f6AC6c781e3d59a8",
+  "WethGammaShortStrategy": "0x832bB88758CFAC1D67b9306c06856E072aA6Afab",
+  "WethUniswapV3Pool": "0xe506cCa8C784bF0911D6dF2A3A871B766a6D816E",
+  "startBlock": 10076500,
+  "strategyStartBlock": 14289743
+}
