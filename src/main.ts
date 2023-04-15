@@ -8,6 +8,7 @@ import { Crop } from "./Crops";
 import { FarmButton } from "./FarmButton";
 import { HarvestButton } from "./HarvestButton";
 import { Controller } from "./contracts/controller";
+import { BASE_MARGIN_AMOUNT } from "./constants";
 
 class Game extends Engine {
   crops: Crop[] = []
@@ -27,7 +28,7 @@ class Game extends Engine {
     const farmScene = new Scene()
 
     titleScene.add(new ConnectButton())
-    emptyScene.add(new FarmButton())
+    emptyScene.add(new FarmButton(controller))
     farmScene.add(new Farm())
 
     const cropPositions = [{
@@ -65,9 +66,8 @@ class Game extends Engine {
       farmScene.add(crop)
     }
 
-    farmScene.add(new HarvestButton())
-
     game.add('title', titleScene)
+    game.add('empty', emptyScene)
     game.add('farm', farmScene)
 
     const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -83,20 +83,48 @@ class Game extends Engine {
 
     const vaultStatus = await controller.getVaultStatusWithAddress()
 
-    console.log(vaultStatus)
-
+    console.log(vaultStatus[1])
 
     try {
-      const address = await signer.getAddress()
+      if (vaultStatus[1].length === 0) {
+        game.goToScene('empty')
+      } else {
+        const vaultId = vaultStatus[1][0][0]
 
-      console.log(address)
+        farmScene.add(new HarvestButton(controller, vaultId))
 
-      game.goToScene('farm')
+        const value = vaultStatus[1][0][2]
+
+        game.goToScene('farm')
+
+        if (value.gt(BASE_MARGIN_AMOUNT)) {
+          const profit = value.sub(BASE_MARGIN_AMOUNT)
+          const index = profit.div('500000').toNumber()
+
+          for (let i = 0; i < 9; i++) {
+            if (i < index) {
+              this.crops[i].updateState(1)
+            }
+          }
+        } else
+          if (value.lt(BASE_MARGIN_AMOUNT)) {
+            const loss = value.sub(BASE_MARGIN_AMOUNT).mul(-1)
+            const index = loss.div('500000').toNumber()
+
+            for (let i = 0; i < 9; i++) {
+              if (i < index) {
+                this.crops[i].updateState(-1)
+              }
+            }
+          }
+
+      }
     } catch (e) {
+      console.log(e)
       game.goToScene('title')
     }
 
-    this.crops[0].updateState(1)
+    // this.crops[0].updateState(1)
   }
 }
 

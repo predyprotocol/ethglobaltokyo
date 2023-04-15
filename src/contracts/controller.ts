@@ -1,4 +1,4 @@
-import { Bytes, ethers } from "ethers";
+import { BigNumber, Bytes, ethers } from "ethers";
 import * as ControllerAbi from "../../abis/Controller.json";
 import { Controller as controllerAddress } from "../../config/arbitrum.json";
 // This function detects most providers injected at window.ethereum.
@@ -15,8 +15,8 @@ type TradeParams = {
 }
 
 type CloseParams = {
-  lowerSqrtPrice: number
-  upperSqrtPrice: number
+  lowerSqrtPrice: BigNumber
+  upperSqrtPrice: BigNumber
   deadline: number
 }
 
@@ -73,11 +73,18 @@ export class Controller {
     closeParams: CloseParams
   ) {
     const contract = this.contract.connect(this.signer);
+    console.log(
+      isolatedVaultId, assetId, closeParams
+    )
     contract.closeIsolatedVault(isolatedVaultId, assetId, closeParams);
   }
 
   async getVaultStatus(vaultId: number): Promise<any> {
     return this.contract.getVaultStatus(vaultId);
+  }
+
+  async getSqrtIndexPrice(assetId: number): Promise<any> {
+    return this.contract.getSqrtPrice(assetId);
   }
 
   async getVaultStatusWithAddress() {
