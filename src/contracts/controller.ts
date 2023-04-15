@@ -23,6 +23,11 @@ class Controller {
   private signer: ethers.Signer;
 
   constructor() {
+    if (typeof window.ethereum !== "undefined") {
+      console.log("MetaMask is installed!");
+      throw new Error("MetaMask is not installed");
+    }
+
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     this.signer = provider.getSigner();
     this.controller = new ethers.Contract(
@@ -31,8 +36,6 @@ class Controller {
       provider
     );
   }
-
-  async initialize() {}
 
   openIsolatedVault(
     depositAmount: number,
