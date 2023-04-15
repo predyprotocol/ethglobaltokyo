@@ -9,6 +9,7 @@ import { FarmButton } from "./FarmButton";
 import { HarvestButton } from "./HarvestButton";
 import { Controller } from "./contracts/controller";
 import { BASE_MARGIN_AMOUNT } from "./constants";
+import { GQLClient } from "./gql/client";
 
 class Game extends Engine {
   crops: Crop[] = []
@@ -77,8 +78,12 @@ class Game extends Engine {
 
     const loader = new Loader([Resources.ConnectButton, Resources.FarmingButton, Resources.HarvestButton, Resources.Title, Resources.Farm, Resources.Crop1, Resources.Crop2])
 
-    await this.start(loader)
+    // const client = new GQLClient();
+    // const retrieves = await client.vaultEntities();
+    // console.dir(retrieves);
+    // console.dir("hoge");
 
+    await this.start(loader)
 
     // 
 
