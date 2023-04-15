@@ -7,6 +7,7 @@ import { Farm } from "./Farm";
 import { Crop } from "./Crops";
 import { FarmButton } from "./FarmButton";
 import { HarvestButton } from "./HarvestButton";
+import { Controller } from "./contracts/controller";
 
 class Game extends Engine {
   crops: Crop[] = []
@@ -19,6 +20,8 @@ class Game extends Engine {
   }
 
   async initialize() {
+    const controller = await Controller.initialize()
+
     const titleScene = new Scene()
     const emptyScene = new Scene()
     const farmScene = new Scene()
@@ -74,6 +77,14 @@ class Game extends Engine {
     const loader = new Loader([Resources.ConnectButton, Resources.FarmingButton, Resources.HarvestButton, Resources.Title, Resources.Farm, Resources.Crop1, Resources.Crop2])
 
     await this.start(loader)
+
+
+    // 
+
+    const vaultStatus = await controller.getVaultStatusWithAddress()
+
+    console.log(vaultStatus)
+
 
     try {
       const address = await signer.getAddress()

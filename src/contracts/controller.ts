@@ -20,7 +20,7 @@ type CloseParams = {
   deadline: number
 }
 
-class Controller {
+export class Controller {
   private contract: ethers.Contract;
   private signer: ethers.Signer;
 
@@ -81,7 +81,9 @@ class Controller {
   }
 
   async getVaultStatusWithAddress() {
-    const contract = this.contract.connect(this.signer);
-    return contract.getVaultStatusWithAddress();
+    const contract = this.contract.connect(this.signer)
+    const from = await this.signer.getAddress()
+    console.log(from)
+    return contract.callStatic.getVaultStatusWithAddress({ from });
   }
 }
