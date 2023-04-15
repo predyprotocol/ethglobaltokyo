@@ -5,8 +5,12 @@ import { ConnectButton } from "./ConnectButton";
 import { Resources } from "./resources";
 import { Farm } from "./Farm";
 import { Crop } from "./Crops";
+import { FarmButton } from "./FarmButton";
+import { HarvestButton } from "./HarvestButton";
 
 class Game extends Engine {
+  crops: Crop[] = []
+
   constructor() {
     super({
       canvasElementId: "game",
@@ -16,20 +20,49 @@ class Game extends Engine {
 
   async initialize() {
     const titleScene = new Scene()
+    const emptyScene = new Scene()
     const farmScene = new Scene()
 
     titleScene.add(new ConnectButton())
+    emptyScene.add(new FarmButton())
     farmScene.add(new Farm())
 
-    farmScene.add(new Crop(100, 100))
-    farmScene.add(new Crop(200, 100))
-    farmScene.add(new Crop(300, 100))
-    farmScene.add(new Crop(100, 200))
-    farmScene.add(new Crop(200, 200))
-    farmScene.add(new Crop(300, 200))
-    farmScene.add(new Crop(100, 300))
-    farmScene.add(new Crop(200, 300))
-    farmScene.add(new Crop(300, 300))
+    const cropPositions = [{
+      x: 100,
+      y: 100
+    }, {
+      x: 200,
+      y: 100
+    }, {
+      x: 300,
+      y: 100
+    }, {
+      x: 100,
+      y: 200
+    }, {
+      x: 200,
+      y: 200
+    }, {
+      x: 300,
+      y: 200
+    }, {
+      x: 100,
+      y: 300
+    }, {
+      x: 200,
+      y: 300
+    }, {
+      x: 300,
+      y: 300
+    }]
+
+    for (let i = 0; i < 9; i++) {
+      const crop = new Crop(cropPositions[i].x, cropPositions[i].y)
+      this.crops.push(crop)
+      farmScene.add(crop)
+    }
+
+    farmScene.add(new HarvestButton())
 
     game.add('title', titleScene)
     game.add('farm', farmScene)
@@ -38,7 +71,7 @@ class Game extends Engine {
 
     const signer = provider.getSigner()
 
-    const loader = new Loader([Resources.ConnectButton, Resources.Title, Resources.Farm, Resources.Crop1, Resources.Crop2])
+    const loader = new Loader([Resources.ConnectButton, Resources.FarmingButton, Resources.HarvestButton, Resources.Title, Resources.Farm, Resources.Crop1, Resources.Crop2])
 
     await this.start(loader)
 
@@ -51,7 +84,8 @@ class Game extends Engine {
     } catch (e) {
       game.goToScene('title')
     }
-    //this.add(new SampleActor(blockNumber, await signer.getAddress()));
+
+    this.crops[0].updateState(1)
   }
 }
 
