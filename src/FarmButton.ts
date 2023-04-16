@@ -10,7 +10,7 @@ export class FarmButton extends Actor {
 
   constructor(controller: Controller) {
     super({
-      pos: new Vector(200, 420),
+      pos: new Vector(200, 480),
       width: 300,
       height: 40,
     })

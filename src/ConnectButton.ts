@@ -7,7 +7,7 @@ export class ConnectButton extends Actor {
 
   constructor(cb: () => void) {
     super({
-      pos: new Vector(200, 340),
+      pos: new Vector(200, 480),
       width: 300,
       height: 40,
     })

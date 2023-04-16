@@ -22,7 +22,7 @@ class Game extends Engine {
   constructor() {
     super({
       canvasElementId: "game",
-      width: 400, height: 480, backgroundColor: Color.fromHex('9CFCF0')
+      width: 400, height: 600, backgroundColor: Color.fromHex('9CFCF0')
     })
   }
 
